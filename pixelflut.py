@@ -27,7 +27,7 @@ def flood(name, sock):
     while True:
         sock.send(ACTIONS)
         i += 1
-        if i % 1e6 == 0:
+        if i % 1e3 == 0:
             print(f"Thread {name} processed {i} action sets.")
 
 
