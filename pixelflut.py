@@ -4,8 +4,8 @@ import threading
 import time
 
 with open("actions.txt", "r") as file:
-    ACTIONS = file.read().splitlines(True)
-ACTIONS = [action.encode("utf-8") for action in ACTIONS]
+    ACTIONS = file.read().strip() + "\n"
+ACTIONS = ACTIONS.encode("utf-8")
 
 ADDRESS = (sys.argv[1], int(sys.argv[2]))
 
@@ -25,11 +25,10 @@ def run_thread(name):
 def flood(name, sock):
     i = 0
     while True:
-        for action in ACTIONS:
-            sock.send(action)
-            i += 1
-            if i % 1e6 == 0:
-                print(f"Thread {name} processed {i} actions.")
+        sock.send(ACTIONS)
+        i += 1
+        if i % 1e6 == 0:
+            print(f"Thread {name} processed {i} action sets.")
 
 
 threads = [threading.Thread(target=run_thread, args=(name,)) for name in range(3)]
