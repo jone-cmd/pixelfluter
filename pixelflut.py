@@ -43,7 +43,7 @@ def flood(name, sock):
             print(f"Thread {name} processed {i} action sets.")
 
 
-threads = [threading.Thread(target=run_thread, args=(name,)) for name in range(3)]
+threads = [threading.Thread(target=run_thread, args=(name,)) for name in range(15)]
 for thread in threads:
     thread.start()
     time.sleep(0.01)
