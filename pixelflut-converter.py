@@ -12,12 +12,16 @@ with Image.open(sys.argv[1]) as image:
     array = np.asarray(image)
 for i, child in enumerate(array):
     for j, color in enumerate(child):
-        if color[3] != 0:
-            hex_color = "%02x%02x%02x" % tuple(
-                color[:3]
-            )  # https://stackoverflow.com/a/3380739
-            command = f"PX {j+x_offset} {i+y_offset} {hex_color}"
-            commands.append(command)
+        try:
+            if color[3] == 0:
+                continue
+        except IndexError:
+            pass
+        hex_color = "%02x%02x%02x" % tuple(
+            color[:3]
+        )  # https://stackoverflow.com/a/3380739
+        command = f"PX {j+x_offset} {i+y_offset} {hex_color}"
+        commands.append(command)
 random.shuffle(commands)
 for command in commands:
     print(command)
