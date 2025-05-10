@@ -7,6 +7,10 @@ with open("actions.txt", "r") as file:
     ACTIONS = file.read().strip() + "\n"
 ACTIONS = ACTIONS.encode("utf-8")
 
+with open("init_actions.txt", "r") as file:
+    INIT_ACTIONS = file.read().strip() + "\n"
+INIT_ACTIONS = INIT_ACTIONS.encode("utf-8")
+
 ADDRESS = (sys.argv[1], int(sys.argv[2]))
 
 
@@ -24,6 +28,7 @@ def run_thread(name):
 
 def flood(name, sock):
     i = 0
+    sock.send(INIT_ACTIONS)
     while True:
         sock.send(ACTIONS)
         i += 1
