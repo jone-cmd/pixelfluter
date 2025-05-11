@@ -61,3 +61,5 @@ while True:
     for name in names:
         commands[name] = f"{action}\n"
 stop = True
+for thread in threads:
+    thread.join()
