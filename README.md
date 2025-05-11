@@ -13,3 +13,7 @@ python3 pixelflut.py <HOST> <PORT> <v4/v6> # and flut!
 Exiting...
 Stopping thread <1-3>...
 ```
+### Getting stats
+```bash
+python3 getstats.py <URL of pixelflut server>
+```
