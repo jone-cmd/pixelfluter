@@ -6,6 +6,7 @@ import os
 
 
 def pretty_num(num):
+    """Convert a number to a human-readable format with SI suffixed."""
     units = [(1e15, "P"), (1e12, "T"), (1e9, "G"), (1e6, "M"), (1e3, "K")]
     for size, unit in units:
         if num > size:
