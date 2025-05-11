@@ -4,62 +4,59 @@ import threading
 import time
 
 with open("actions.txt", "r") as file:
-    ACTIONS = file.read().strip() + "\n"
-ACTIONS = ACTIONS.encode("utf-8")
+    ACTIONS = file.read().strip() + "\n" # Ensure there's a newline at the end
+ACTIONS = ACTIONS.encode("utf-8") # Encode the actions to bytes
 
-ADDRESS = (sys.argv[1], int(sys.argv[2]))
-
-commands = {}
+commands = {} # Dictionary to hold commands for each thread
 
 def run_thread(name):
-    protocol = sys.argv[3] if len(sys.argv) > 3 else "v4"
-    if protocol == "v6":
-        ADDRESS = (sys.argv[1], int(sys.argv[2]), 0, 0)
-        PROTOCOL = socket.AF_INET6
+    protocol = sys.argv[3] if len(sys.argv) > 3 else "v4" # Protocol, default to IPv4
+    if protocol == "v6": # Check if IPv6 is specified
+        ADDRESS = (sys.argv[1], int(sys.argv[2]), 0, 0) # IPv6 address format
+        PROTOCOL = socket.AF_INET6 # Use IPv6 socket
     else:
-        ADDRESS = (sys.argv[1], int(sys.argv[2]))
-        PROTOCOL = socket.AF_INET
+        ADDRESS = (sys.argv[1], int(sys.argv[2])) # IPv4 address format
+        PROTOCOL = socket.AF_INET # Use IPv4 socket
     try:
-        with socket.socket(PROTOCOL, socket.SOCK_STREAM) as s:
-            s.connect(ADDRESS)
+        with socket.socket(PROTOCOL, socket.SOCK_STREAM) as s: # Create a socket
+            s.connect(ADDRESS) # Connect to the server
             print(f"Thread {name} initialized.")
-            flood(name, s)
+            flood(name, s) # and start flooding!
     except OSError as e:
-        print(f"{e.__class__.__name__} in thread {name}: {e}")
-        time.sleep(10)
-        run_thread(name)
+        print(f"{e.__class__.__name__} in thread {name}: {e}") # Handle socket errors
+        time.sleep(10) # Wait before retrying
+        run_thread(name) # and retry
 
 
 def flood(name, sock):
-    i = 0
-    while True:
-        if name in commands:
-            sock.send(commands[name].encode("utf-8"))
-            del commands[name]
-        sock.send(ACTIONS)
-        i += 1
-        if i % 1e3 == 0:
+    i = 0 # Number of action sets sent
+    while True: # Infinite loop to keep sending actions
+        if name in commands: # Check if there are commands for this thread
+            sock.send(commands[name].encode("utf-8")) # Send the command
+            del commands[name] # Remove the command after sending to avoid re-sending
+        sock.send(ACTIONS) # Send the action set
+        i += 1 # Increment the action set counter
+        if i % 1e3 == 0: # Print every 1000 action sets
             print(f"Thread {name} processed {i} action sets.")
-        if stop:
+        if stop: # Check if the stop flag is set
             print(f"Thread {name} stopping.")
             break
-    sock.close()
 
 
-stop = False
+stop = False # Dont't stop at beginning; init variable
 names = range(3) # 3 threads fill 1GBit/s uplink, for me
-threads = [threading.Thread(target=run_thread, args=(name,)) for name in names]
+threads = [threading.Thread(target=run_thread, args=(name,)) for name in names] # Create threads for each name
 for thread in threads:
-    thread.start()
-    time.sleep(0.01)
+    thread.start() # Start all threads
+    time.sleep(0.01) # Small delay, sending the pixel 3 times in a row, doesn't work so good
 while True:
     try:
-        action = input("> ")
-    except (KeyboardInterrupt, EOFError):
+        action = input("> ") # Get user input for action
+    except (KeyboardInterrupt, EOFError): # Handle exit signals
         print("Exiting...")
         break
-    for name in names:
+    for name in names: # Assign the action to each thread
         commands[name] = f"{action}\n"
-stop = True
-for thread in threads:
+stop = True # At the end, set the stop flag to true
+for thread in threads: # Wait for all threads to finish
     thread.join()
