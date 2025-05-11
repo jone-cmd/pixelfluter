@@ -12,6 +12,7 @@ with open("actions.txt", "r") as file:
 ACTIONS = ACTIONS.encode("utf-8") # Encode the actions to bytes
 
 commands = {} # Dictionary to hold commands for each thread
+msgs = [] # List to hold messages for printing
 
 def run_thread(name):
     protocol = sys.argv[3] if len(sys.argv) > 3 else "v4" # Protocol, default to IPv4
@@ -24,10 +25,10 @@ def run_thread(name):
     try:
         with socket.socket(PROTOCOL, socket.SOCK_STREAM) as s: # Create a socket
             s.connect(ADDRESS) # Connect to the server
-            print(f"Thread {name} initialized.")
+            msgs.append(f"Thread {name} initialized.")
             flood(name, s) # and start flooding!
     except OSError as e:
-        print(f"{e.__class__.__name__} in thread {name}: {e}") # Handle socket errors
+        msgs.append(f"{e.__class__.__name__} in thread {name}: {e}") # Handle socket errors
         time.sleep(10) # Wait before retrying
         run_thread(name) # and retry
 
@@ -41,11 +42,16 @@ def flood(name, sock):
         sock.send(ACTIONS) # Send the action set
         i += 1 # Increment the action set counter
         if i % 1e3 == 0: # Print every 1000 action sets
-            print(f"Thread {name} processed {i} action sets.")
+            msgs.append(f"Thread {name} processed {i} action sets.")
         if stop: # Check if the stop flag is set
-            print(f"Thread {name} stopping.")
+            msgs.append(f"Thread {name} stopping.")
             break
 
+def print_msgs():
+    """Print all pending messages in the list.""""
+    while len(msgs): # Print all messages in the list
+        msg = msgs.pop(0) # Get the first message
+        print(msg) # Print the message
 
 stop = False # Dont't stop at beginning; init variable
 names = range(3) # 3 threads fill 1GBit/s uplink, for me
@@ -93,6 +99,8 @@ while True:
     if command:
         for name in names: # Assign the action to each thread
             commands[name] = f"{command}\n"
+    print_msgs()
 stop = True # At the end, set the stop flag to true
 for thread in threads: # Wait for all threads to finish
     thread.join()
+print_msgs()
