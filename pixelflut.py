@@ -2,6 +2,10 @@ import socket
 import sys
 import threading
 import time
+try:
+    import readline # For command line input
+except ImportError:
+    pass
 
 with open("actions.txt", "r") as file:
     ACTIONS = file.read().strip() + "\n" # Ensure there's a newline at the end
@@ -51,12 +55,43 @@ for thread in threads:
     time.sleep(0.01) # Small delay, sending the pixel 3 times in a row, doesn't work so good
 while True:
     try:
-        action = input("> ") # Get user input for action
+        action = input("> ").strip() # Get user input for action
     except (KeyboardInterrupt, EOFError): # Handle exit signals
         print("Exiting...")
         break
-    for name in names: # Assign the action to each thread
-        commands[name] = f"{action}\n"
+    action_split = action.split(" ") # Split the action into command and arguments
+    command = None # no default command
+    action = action_split[0] # First part is the action
+    args = action_split[1:] # Remaining parts are arguments
+    if action in ["stop", "exit", "quit"]: # Check for exit commands
+        break
+    elif action == "help": # Show help message
+        print("Available actions: quit (stop, exit), help, offset (of), raw")
+        print("Enter the action followed by arguments.")
+        print("Example: offset 10 20")
+        print("For help, enter just the action.")
+        continue
+    elif action == ["offset", "of"]: # Check for offset command
+        if len(args) != 2:
+            print("Usage: offset <x> <y>")
+            continue
+        try:
+            args = [int(arg) for arg in args] # Convert arguments to integers
+        except ValueError:
+            print("Need integers for offset")
+            continue
+        command = f"OFFSET {args[0]} {args[1]}"
+    elif action == "raw": # Check for raw command
+        if len(args) < 1:
+            print("Usage: raw <command>")
+            continue
+        command = " ".join(args)
+    else: # If action is not recognized
+        print(f"Unknown action: {action}")
+        continue
+    if command:
+        for name in names: # Assign the action to each thread
+            commands[name] = f"{command}\n"
 stop = True # At the end, set the stop flag to true
 for thread in threads: # Wait for all threads to finish
     thread.join()
