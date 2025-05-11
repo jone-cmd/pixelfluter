@@ -48,7 +48,7 @@ def flood(name, sock):
             break
 
 def print_msgs():
-    """Print all pending messages in the list.""""
+    """Print all pending messages in the list."""
     while len(msgs): # Print all messages in the list
         msg = msgs.pop(0) # Get the first message
         print(msg) # Print the message
