@@ -71,7 +71,7 @@ while True:
         print("Example: offset 10 20")
         print("For help, enter just the action.")
         continue
-    elif action == ["offset", "of"]: # Check for offset command
+    elif action in ["offset", "of"]: # Check for offset command
         if len(args) != 2:
             print("Usage: offset <x> <y>")
             continue
