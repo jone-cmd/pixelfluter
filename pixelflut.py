@@ -86,9 +86,10 @@ while True:
             print("Usage: raw <command>")
             continue
         command = " ".join(args)
+    elif action == "": # If action is empty, skip
+        pass
     else: # If action is not recognized
         print(f"Unknown action: {action}")
-        continue
     if command:
         for name in names: # Assign the action to each thread
             commands[name] = f"{command}\n"
