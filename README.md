@@ -8,9 +8,8 @@ python3 pixelflut.py <HOST> <PORT> <v4/v6> # and flut!
 ```
 ### Console and stopping
 ```
-> <Enter pixelflut command here>
-> OFFSET <X_OFFSET> <Y_OFFSET>
-> <Ctrl-C or Ctrl-D to stop>
+> help
+> quit <or Ctrl-C, Ctrl-D>
 Exiting...
 Stopping thread <1-3>...
 ```
