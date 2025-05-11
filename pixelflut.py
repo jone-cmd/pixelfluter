@@ -47,7 +47,7 @@ def flood(name, sock):
 
 
 stop = False
-names = range(3)
+names = range(3) # 3 threads fill 1GBit/s uplink, for me
 threads = [threading.Thread(target=run_thread, args=(name,)) for name in names]
 for thread in threads:
     thread.start()
