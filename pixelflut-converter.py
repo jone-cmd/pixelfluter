@@ -3,7 +3,7 @@ import sys
 import numpy as np
 import random
 
-def covert_image(image_path):
+def convert_image(image_path):
     commands = []
 
     with Image.open(image_path) as image:
@@ -30,7 +30,7 @@ def main():
         sys.exit(1)
 
     for image_path in sys.argv[1:]:
-        covert_image(image_path)
+        convert_image(image_path)
 
 if __name__ == "__main__":
     main()
