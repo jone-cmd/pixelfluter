@@ -3,6 +3,13 @@ import sys
 import numpy as np
 import random
 
+def all_chars_same(interable: Iterable) -> bool:
+    """
+    Check if all items in the interable are the same.
+    For example, '000000' or 'ffffff' returns True, but '123456' returns False.
+    """
+    return len(set(interable)) == 1
+
 def convert_image(image_path):
     commands = []
 
@@ -18,6 +25,8 @@ def convert_image(image_path):
             hex_color = "%02x%02x%02x" % tuple(
                 color[:3]
             )  # https://stackoverflow.com/a/3380739
+            if all_chars_same(hex_color):
+                hex_color = hex_color[0] * 2
             command = f"PX {j} {i} {hex_color}" # Build the command
             commands.append(command) # Save the command
     random.shuffle(commands) # Shuffle the commands to avoid sending them from top to bottom
