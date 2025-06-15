@@ -2,6 +2,7 @@ from PIL import Image
 import sys
 import numpy as np
 import random
+from typing import Iterable
 
 def all_chars_same(interable: Iterable) -> bool:
     """
