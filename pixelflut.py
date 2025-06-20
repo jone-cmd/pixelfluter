@@ -15,6 +15,7 @@ commands = {} # Dictionary to hold commands for each thread
 msgs = [] # List to hold messages for printing
 
 def run_thread(name):
+    """Function to run in each thread, connecting to the server and flooding it with actions."""
     protocol = sys.argv[3] if len(sys.argv) > 3 else "v4" # Protocol, default to IPv4
     if protocol == "v6": # Check if IPv6 is specified
         ADDRESS = (sys.argv[1], int(sys.argv[2]), 0, 0) # IPv6 address format
@@ -34,6 +35,8 @@ def run_thread(name):
 
 
 def flood(name, sock):
+    """Flood the server with actions and commands."""
+    sock.send(f"OFFSET {args[0]} {args[1]}".encode("utf-8")) # Send the initial offset command
     i = 0 # Number of action sets sent
     while True: # Infinite loop to keep sending actions
         if name in commands: # Check if there are commands for this thread
@@ -53,6 +56,8 @@ def print_msgs():
         msg = msgs.pop(0) # Get the first message
         print(msg) # Print the message
 
+
+offset = (0, 0) # Default offset
 stop = False # Dont't stop at beginning; init variable
 names = range(3) # 3 threads fill 1GBit/s uplink, for me
 threads = [threading.Thread(target=run_thread, args=(name,)) for name in names] # Create threads for each name
@@ -83,6 +88,7 @@ while True:
             continue
         try:
             args = [int(arg) for arg in args] # Convert arguments to integers
+            offset = args[0], args[1] # Set the offset
         except ValueError:
             print("Need integers for offset")
             continue
