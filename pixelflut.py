@@ -88,6 +88,7 @@ while True:
     elif action in ["offset", "of"]: # Check for offset command
         if len(args) != 2:
             print("Usage: offset <x> <y>")
+            print(f"Current offset: {offset}")
             continue
         try:
             args = [int(arg) for arg in args] # Convert arguments to integers
