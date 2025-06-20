@@ -20,9 +20,12 @@ def run_thread(name):
     if protocol == "v6": # Check if IPv6 is specified
         ADDRESS = (sys.argv[1], int(sys.argv[2]), 0, 0) # IPv6 address format
         PROTOCOL = socket.AF_INET6 # Use IPv6 socket
-    else:
+    elif protocol == "v4": # Check if IPv4 is specified
         ADDRESS = (sys.argv[1], int(sys.argv[2])) # IPv4 address format
         PROTOCOL = socket.AF_INET # Use IPv4 socket
+    else:
+        print(f"Unknown protocol: {protocol}. Use 'v4' or 'v6'.")
+        return
     try:
         with socket.socket(PROTOCOL, socket.SOCK_STREAM) as s: # Create a socket
             s.connect(ADDRESS) # Connect to the server
