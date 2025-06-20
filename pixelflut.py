@@ -39,7 +39,7 @@ def run_thread(name):
 
 def flood(name, sock):
     """Flood the server with actions and commands."""
-    sock.send(f"OFFSET {args[0]} {args[1]}".encode("utf-8")) # Send the initial offset command
+    sock.send(f"OFFSET {offset[0]} {offset[1]}".encode("utf-8")) # Send the initial offset command
     i = 0 # Number of action sets sent
     while True: # Infinite loop to keep sending actions
         if name in commands: # Check if there are commands for this thread
