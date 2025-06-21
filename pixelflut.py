@@ -116,5 +116,6 @@ while True:
             commands[name] = f"{command}\n"
 stop = True # At the end, set the stop flag to true
 for thread in threads: # Wait for all threads to finish
-    thread.join()
+    print(f"Waiting for thread {thread.name} to finish...")
+    thread.join(5) # Wait for 5 seconds for each thread to finish
 print_msgs()
