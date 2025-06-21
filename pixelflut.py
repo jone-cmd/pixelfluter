@@ -14,7 +14,7 @@ ACTIONS = ACTIONS.encode("utf-8") # Encode the actions to bytes
 commands = {} # Dictionary to hold commands for each thread
 msgs = [] # List to hold messages for printing
 
-def run_thread(name):
+def run_thread(name, depth=0):
     """Function to run in each thread, connecting to the server and flooding it with actions."""
     protocol = sys.argv[3] if len(sys.argv) > 3 else "v4" # Protocol, default to IPv4
     if protocol == "v6": # Check if IPv6 is specified
@@ -34,8 +34,11 @@ def run_thread(name):
             flood(name, s) # and start flooding!
     except OSError as e:
         msgs.append(f"{e.__class__.__name__} in thread {name}: {e}") # Handle socket errors
+        if depth > 3: # More then 3 errors
+            msgs.append(f"Thread {name}: too many errors ({depth})")
+            return # Stop the thread
         time.sleep(10) # Wait before retrying
-        run_thread(name) # and retry
+        run_thread(name, depth+1) # and retry
 
 
 def flood(name, sock):
