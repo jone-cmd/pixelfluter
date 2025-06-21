@@ -100,6 +100,7 @@ while True:
             print("Need integers for offset")
             continue
         command = f"OFFSET {args[0]} {args[1]}"
+        print(f"New offset: {offset}")
     elif action == "raw": # Check for raw command
         if len(args) < 1:
             print("Usage: raw <command>")
