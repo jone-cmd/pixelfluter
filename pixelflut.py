@@ -50,7 +50,7 @@ def flood(name, sock):
             del commands[name] # Remove the command after sending to avoid re-sending
         sock.send(ACTIONS) # Send the action set
         i += 1 # Increment the action set counter
-        if i % 1e3 == 0: # Print every 1000 action sets
+        if i % 1e4 == 0: # Print every 1000 action sets
             msgs.append(f"Thread {name} processed {i} action sets.")
         if stop: # Check if the stop flag is set
             msgs.append(f"Thread {name} stopping.")
