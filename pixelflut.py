@@ -76,6 +76,7 @@ while True:
     except (KeyboardInterrupt, EOFError): # Handle exit signals
         print("Exiting...")
         break
+    print_msgs()
     action_split = action.split(" ") # Split the action into command and arguments
     command = None # no default command
     action = action_split[0] # First part is the action
@@ -113,7 +114,6 @@ while True:
     if command:
         for name in names: # Assign the action to each thread
             commands[name] = f"{command}\n"
-    print_msgs()
 stop = True # At the end, set the stop flag to true
 for thread in threads: # Wait for all threads to finish
     thread.join()
