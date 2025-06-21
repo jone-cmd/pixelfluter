@@ -70,6 +70,8 @@ threads = [threading.Thread(target=run_thread, args=(name,)) for name in names] 
 for thread in threads:
     thread.start() # Start all threads
     time.sleep(0.01) # Small delay, sending the pixel 3 times in a row, doesn't work so good
+time.sleep(1) # Wait 1 second for threads to start
+print_msgs() # and print startup msgs
 while True:
     try:
         action = input("> ").strip() # Get user input for action
