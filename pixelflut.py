@@ -29,7 +29,6 @@ def run_thread(name, depth=0):
     try:
         with socket.socket(PROTOCOL, socket.SOCK_STREAM) as s: # Create a socket
             s.connect(ADDRESS) # Connect to the server
-            s.setblocking(False) # Set the socket to non-blocking mode - allows sending without waiting for a response
             msgs.append(f"Thread {name} initialized.")
             flood(name, s) # and start flooding!
     except OSError as e:
