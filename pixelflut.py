@@ -2,17 +2,19 @@ import socket
 import sys
 import threading
 import time
-try:
-    import readline # For command line input
-except ImportError:
-    pass
+import rich
+import rich.prompt
+import readline
+
+console = rich.get_console()
+print = console.print
+input = lambda prompt, *args, **kwargs: rich.prompt.Prompt.ask(prompt, *args, **kwargs, console=console)
 
 with open("actions.txt", "r") as file:
     ACTIONS = file.read().strip() + "\n" # Ensure there's a newline at the end
 ACTIONS = ACTIONS.encode("utf-8") # Encode the actions to bytes
 
 commands = {} # Dictionary to hold commands for each thread
-msgs = [] # List to hold messages for printing
 
 def run_thread(name, depth=0):
     """Function to run in each thread, connecting to the server and flooding it with actions."""
@@ -29,12 +31,12 @@ def run_thread(name, depth=0):
     try:
         with socket.socket(PROTOCOL, socket.SOCK_STREAM) as s: # Create a socket
             s.connect(ADDRESS) # Connect to the server
-            msgs.append(f"Thread {name} initialized.")
+            print(f"Thread {name} initialized.")
             flood(name, s) # and start flooding!
     except OSError as e:
-        msgs.append(f"{e.__class__.__name__} in thread {name}: {e}") # Handle socket errors
+        print(f"{e.__class__.__name__} in thread {name}: {e}") # Handle socket errors
         if depth > 3: # More then 3 errors
-            msgs.append(f"Thread {name}: too many errors ({depth})")
+            print(f"Thread {name}: too many errors ({depth})")
             return # Stop the thread
         time.sleep(10) # Wait before retrying
         run_thread(name, depth+1) # and retry
@@ -51,16 +53,10 @@ def flood(name, sock):
         sock.send(ACTIONS) # Send the action set
         i += 1 # Increment the action set counter
         if i % 1e4 == 0: # Print every 1000 action sets
-            msgs.append(f"Thread {name} processed {i} action sets.")
+            print(f"Thread {name} processed {i} action sets.")
         if stop: # Check if the stop flag is set
-            msgs.append(f"Thread {name} stopping.")
+            print(f"Thread {name} stopping.")
             break
-
-def print_msgs():
-    """Print all pending messages in the list."""
-    while len(msgs): # Print all messages in the list
-        msg = msgs.pop(0) # Get the first message
-        print(msg) # Print the message
 
 
 offset = (0, 0) # Default offset
@@ -71,14 +67,12 @@ for thread in threads:
     thread.start() # Start all threads
     time.sleep(0.01) # Small delay, sending the pixel 3 times in a row, doesn't work so good
 time.sleep(1) # Wait 1 second for threads to start
-print_msgs() # and print startup msgs
 while True:
     try:
-        action = input("> ").strip() # Get user input for action
+        action =  input("Enter action").strip() # Get user input for action
     except (KeyboardInterrupt, EOFError): # Handle exit signals
         print("Exiting...")
         break
-    print_msgs()
     action_split = action.split(" ") # Split the action into command and arguments
     command = None # no default command
     action = action_split[0] # First part is the action
@@ -123,4 +117,3 @@ for thread in threads: # Wait for all threads to finish
     if thread.is_alive(): # If the thread doesn't stop
         print(f"Thread {thread.name} is still alive. Stopping it...")
         thread.stop() # Stop it!
-    print_msgs() # And print msgs
