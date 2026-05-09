@@ -68,10 +68,13 @@ def flood(name, sock):
         if stop:  # Check if the stop flag is set
             print(f"Thread {name} stopping.")
             break
+        while pause:
+            time.sleep(0.1)
 
 
 offset = (0, 0)  # Default offset
 stop = False  # Dont't stop at beginning; init variable
+pause = False
 names = range(3)  # 3 threads fill 1GBit/s uplink, for me
 threads = [threading.Thread(target=run_thread, args=(name,))
            for name in names]  # Create threads for each name
@@ -94,7 +97,7 @@ while True:
     if action in ["stop", "exit", "quit"]:  # Check for exit commands
         break
     elif action == "help":  # Show help message
-        print("Available actions: quit (stop, exit), help, offset (of), raw")
+        print("Available actions: quit (stop, exit), help, offset (of), raw, pause (p, paws)")
         print("Enter the action followed by arguments.")
         print("Example: offset 10 20")
         print("For help, enter just the action.")
@@ -117,6 +120,9 @@ while True:
             print("Usage: raw <command>")
             continue
         command = " ".join(args)
+    elif action in ("pause", "p", "paws"):
+        pause = not pause
+        print(f"Paused: {pause}")
     elif action == "":  # If action is empty, skip
         pass
     else:  # If action is not recognized
