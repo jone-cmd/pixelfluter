@@ -1,4 +1,5 @@
 import socket
+import subprocess
 import sys
 import threading
 import time
@@ -75,6 +76,7 @@ def flood(name, sock):
 offset = (0, 0)  # Default offset
 stop = False  # Dont't stop at beginning; init variable
 pause = False
+restart = False
 names = range(3)  # 3 threads fill 1GBit/s uplink, for me
 threads = [threading.Thread(target=run_thread, args=(name,))
            for name in names]  # Create threads for each name
@@ -96,8 +98,11 @@ while True:
     args = action_split[1:]  # Remaining parts are arguments
     if action in ["stop", "exit", "quit"]:  # Check for exit commands
         break
+    elif action == "restart":
+        restart = True
+        break
     elif action == "help":  # Show help message
-        print("Available actions: quit (stop, exit), help, offset (of), raw, pause (p, paws)")
+        print("Available actions: quit (stop, exit), restart, help, offset (of), raw, pause (p, paws)")
         print("Enter the action followed by arguments.")
         print("Example: offset 10 20")
         print("For help, enter just the action.")
@@ -137,3 +142,5 @@ for thread in threads:  # Wait for all threads to finish
     if thread.is_alive():  # If the thread doesn't stop
         print(f"Thread {thread.name} is still alive. Stopping it...")
         thread.stop()  # Stop it!
+if restart:
+    subprocess.run([sys.executable, *sys.argv])
